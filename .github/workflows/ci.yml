@@ -1,0 +1,68 @@
+name: "CI"
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "main"
+
+env:
+  POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+  MAGIC_CONNECT_API_KEY: ${{ secrets.MAGIC_CONNECT_API_KEY }}
+  RAINBOW_PROJECT_ID: ${{ secrets.RAINBOW_PROJECT_ID }}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        name: "🛒 Checkout code"
+
+      - name: "Install Pnpm"
+        uses: pnpm/action-setup@v2
+        with:
+          version: "8"
+
+      - name: "🔧 Set up Node.js"
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+          cache: "pnpm"
+
+      - name: "🚀 Install dependencies"
+        run: pnpm install
+
+      - name: "🔍 Lint code"
+        run: pnpm run lint
+
+  build:
+    needs: lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        name: "🛒 Checkout code"
+
+      - name: "Install Pnpm"
+        uses: pnpm/action-setup@v2
+        with:
+          version: "8"
+
+      - name: "🔧 Set up Node.js"
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+          cache: "pnpm"
+
+      - name: "🚀 Install dependencies"
+        run: pnpm install
+
+      # - name: "🔧 Set up Docker Compose"
+      #   run: docker-compose up -d
+
+      # - name: "🏗️ Build"
+      #   run: docker-compose exec -T web pnpm run build
+
+      # - name: "🔧 Shut down Docker Compose"
+      #   run: docker-compose down
